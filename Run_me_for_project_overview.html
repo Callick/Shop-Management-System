@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair Shop Management System - Feature & DB Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Slate/Sky -->
+    <!-- Application Structure Plan: A single-page application with a fixed top navigation bar to switch between primary content views (Overview, Roles, Features, Architecture, and DB Schema). This tabbed structure allows users to quickly navigate to the information they need. The "DB Schema" section is a self-contained module with its own sub-navigation, featuring an interactive ERD. This nested structure was chosen to logically group the high-level system features separately from the detailed technical database model, while keeping everything accessible within a single page for a seamless user experience. -->
+    <!-- Visualization & Content Choices: 
+        - System Features: Presented using cards, lists, and process diagrams for easy digestion. A donut chart visualizes role permissions. (Library: Chart.js, HTML/CSS).
+        - Database Schema: An interactive ERD built with HTML/CSS allows for visual exploration. Clicking a table reveals its detailed schema. A bar chart compares table complexity. (Library: Chart.js, HTML/CSS).
+        - Justification: This combined approach leverages the best visualization for each type of content—expressive diagrams for processes and relationships, and clean data tables/charts for quantitative and technical details.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F4; /* stone-100 */
+        }
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #4338CA; /* indigo-700 */
+            color: #1E1B4B; /* indigo-950 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        .process-step {
+            transition: all 0.2s ease-in-out;
+        }
+        .process-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        /* DB Schema Styles */
+        .db-tab-link {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 3px solid transparent;
+        }
+        .db-tab-link.active {
+            border-bottom-color: #0ea5e9; /* sky-500 */
+            color: #0c4a6e; /* sky-900 */
+        }
+        .db-content-pane {
+            display: none;
+        }
+        .db-content-pane.active {
+            display: block;
+        }
+        .db-table {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 2px solid #e2e8f0; /* slate-200 */
+        }
+        .db-table:hover {
+            border-color: #0ea5e9; /* sky-500 */
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .db-table.active {
+            border-color: #0ea5e9; /* sky-500 */
+            background-color: #f0f9ff; /* sky-50 */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .connector {
+            position: absolute;
+            background-color: #94a3b8; /* slate-400 */
+            z-index: -1;
+        }
+        .connector.active {
+             background-color: #0ea5e9; /* sky-500 */
+        }
+        #details-placeholder {
+            min-height: 200px;
+        }
+        #details-view {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .db-chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div id="app" class="antialiased">
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 shadow-sm">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <a href="https://github.com/Callick/Shop-Management-System" target="_blank"><h1 class="text-xl md:text-2xl font-bold text-stone-900">Shop Management System</h1></a>
+                    <nav class="hidden md:flex items-center space-x-4 lg:space-x-8">
+                        <a href="#overview" class="nav-link text-stone-600 hover:text-stone-900 font-medium px-2 py-1">Overview</a>
+                        <a href="#roles" class="nav-link text-stone-600 hover:text-stone-900 font-medium px-2 py-1">User Roles</a>
+                        <a href="#features" class="nav-link text-stone-600 hover:text-stone-900 font-medium px-2 py-1">Core Features</a>
+                        <a href="#architecture" class="nav-link text-stone-600 hover:text-stone-900 font-medium px-2 py-1">Architecture</a>
+                        <a href="#db-schema" class="nav-link text-stone-600 hover:text-stone-900 font-medium px-2 py-1">DB Schema</a>
+                    </nav>
+                    <div class="md:hidden">
+                        <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="overview">Overview</option>
+                            <option value="roles">User Roles</option>
+                            <option value="features">Core Features</option>
+                            <option value="architecture">Architecture</option>
+                            <option value="db-schema">DB Schema</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            
+            <div id="overview" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">System Feature Explorer</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">An interactive guide to the functional and non-functional requirements for the Web-Based Shop Management System.</p>
+                </div>
+                
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+                    <h3 class="text-2xl font-semibold text-stone-900 border-b border-stone-200 pb-4 mb-6">Project Introduction</h3>
+                    <p class="text-stone-700 leading-relaxed">This system is designed to replace the existing paper-based process for tracking customer belongings, providing a secure, efficient, and reliable digital solution. It will manage repair job records, user access, and system notifications through an intuitive web interface. The primary goal is to streamline operations, reduce paperwork, and improve data accuracy for the repair shop. <mark>N.B. These will be changed on time as needed.</mark></p>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-semibold text-stone-900 mb-6 text-center">Key System Attributes</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm"><h4 class="font-bold text-lg text-indigo-800">Role-Based Access</h4><p class="mt-2 text-stone-600">Strict permissions for 'Admin' and 'Assistant-Admin' roles ensure users only access the features they are authorized for.</p></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm"><h4 class="font-bold text-lg text-indigo-800">Data Integrity</h4><p class="mt-2 text-stone-600">Comprehensive input validation will be implemented to ensure data consistency and protect against common web vulnerabilities.</p></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm"><h4 class="font-bold text-lg text-indigo-800">Modern & Usable</h4><p class="mt-2 text-stone-600">The user interface will be intuitive, responsive, and easy to navigate, ensuring a smooth experience for all users.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roles" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">User Roles & Permissions</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">The system features a strict Role-Based Access Control (RBAC) model with two distinct user roles. This section breaks down the specific capabilities of each role. <mark>N.B. These will be changed on time as needed.</mark></p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-600"><h3 class="text-xl font-bold text-stone-900">Administrator</h3><p class="text-sm text-stone-500 mt-1 mb-4">Full system privileges for management and oversight.</p><ul class="space-y-3 text-stone-700"><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> Full CRUD on Repair Records</li><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> Manage All User Accounts</li><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> Approve/Deny Deletion Requests</li><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> View System-wide Logs</li></ul></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-amber-500"><h3 class="text-xl font-bold text-stone-900">Assistant-Admin</h3><p class="text-sm text-stone-500 mt-1 mb-4">Restricted privileges for daily operational tasks.</p><ul class="space-y-3 text-stone-700"><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> Create, Read, Update Records</li><li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span> Print Repair Statements</li><li class="flex items-start"><span class="text-red-500 mr-3 mt-1">✗</span> Directly Delete Records</li><li class="flex items-start"><span class="text-amber-500 mr-3 mt-1">→</span> Must Request Record Deletion</li><li class="flex items-start"><span class="text-red-500 mr-3 mt-1">✗</span> Manage User Accounts</li></ul></div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm"><h3 class="text-xl font-bold text-stone-900 text-center mb-4">Permission Distribution</h3><p class="text-center text-sm text-stone-600 mb-4">This chart visualizes the share of unique system capabilities assigned to each role, highlighting the Admin's broader control.</p><div class="chart-container"><canvas id="rolesChart"></canvas></div></div>
+                </div>
+            </div>
+
+            <div id="features" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">Core System Features</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">Explore the main functionalities of the system, from managing repair records to the secure deletion workflow.</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-8">
+                    <h3 class="text-2xl font-semibold text-stone-900 border-b border-stone-200 pb-4 mb-6">Record Management</h3>
+                    <p class="text-stone-600 mb-6">This is the heart of the system. All information related to a customer's repair job is captured in a single, comprehensive record. Below are the fields that make up each repair ticket. <mark>N.B. These will be changed on time as needed.</mark></p>
+                    <div class="bg-stone-50 border border-stone-200 rounded-lg p-6"><h4 class="font-bold text-lg text-stone-800">Sample Repair Record Fields</h4><ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-stone-700"><li><strong class="font-medium text-stone-900">Customer Name:</strong> String</li><li><strong class="font-medium text-stone-900">Customer Contact:</strong> String</li><li><strong class="font-medium text-stone-900">Device/Item ID:</strong> String</li><li><strong class="font-medium text-stone-900">Date of Receipt:</strong> Date</li><li><strong class="font-medium text-stone-900">Expected Delivery:</strong> Date</li><li><strong class="font-medium text-stone-900">Total Cost ($):</strong> Decimal</li><li><strong class="font-medium text-stone-900">Amount Paid ($):</strong> Decimal</li><li><strong class="font-medium text-stone-900">Amount Due ($):</strong> Decimal</li><li><strong class="font-medium text-stone-900">Record Status:</strong> Enum</li><li class="sm:col-span-2"><strong class="font-medium text-stone-900">Stated Issues:</strong> Text</li><li class="sm:col-span-2"><strong class="font-medium text-stone-900">Comments:</strong> Text</li></ul></div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+                     <h3 class="text-2xl font-semibold text-stone-900 border-b border-stone-200 pb-4 mb-6">Deletion Approval Workflow</h3>
+                     <p class="text-stone-600 mb-8">To prevent accidental data loss, a special workflow is required when an Assistant-Admin needs to delete a record. This ensures that a senior staff member reviews and confirms every deletion. Follow the steps below to see how it works.</p>
+                     <div class="relative"><div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12 md:gap-y-0 items-center"><div class="absolute top-1/2 left-0 w-full h-1 bg-stone-200 hidden md:block" style="transform: translateY(-50%);"></div><div class="relative process-step text-center bg-white p-4 rounded-lg border border-stone-200"><div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</div><h4 class="font-semibold text-lg mt-6">Request</h4><p class="text-sm text-stone-600 mt-1">Assistant-Admin initiates a 'delete' action on a record.</p></div><div class="relative process-step text-center bg-white p-4 rounded-lg border border-stone-200"><div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</div><h4 class="font-semibold text-lg mt-6">Review</h4><p class="text-sm text-stone-600 mt-1">System flags the record as 'Pending Deletion' and notifies all Admins.</p></div><div class="relative process-step text-center bg-white p-4 rounded-lg border border-stone-200"><div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</div><h4 class="font-semibold text-lg mt-6">Confirmation</h4><p class="text-sm text-stone-600 mt-1">Admin approves or denies. A final notification is sent back to the Assistant-Admin.</p></div></div></div>
+                </div>
+            </div>
+
+            <div id="architecture" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">System Architecture</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">The system will be built on a modern, robust, and widely-supported technology stack to ensure performance, security, and maintainability. <mark>N.B. These will be changed on time as needed.</mark></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm text-center"><h3 class="text-xl font-semibold text-stone-900">Backend Framework</h3><p class="mt-2 text-indigo-700 font-bold text-lg">Laravel 10</p><p class="text-sm text-stone-500 mt-2">A powerful PHP framework providing structure for routing, controllers, and models.</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm text-center"><h3 class="text-xl font-semibold text-stone-900">Frontend Engine</h3><p class="mt-2 text-indigo-700 font-bold text-lg">Blade</p><p class="text-sm text-stone-500 mt-2">Laravel's native templating engine for building dynamic views on the server-side.</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm text-center"><h3 class="text-xl font-semibold text-stone-900">Database</h3><p class="mt-2 text-indigo-700 font-bold text-lg">MySQL / PostgreSQL</p><p class="text-sm text-stone-500 mt-2">A reliable relational database to store all application data securely.</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm text-center"><h3 class="text-xl font-semibold text-stone-900">Authentication</h3><p class="mt-2 text-indigo-700 font-bold text-lg">Laravel Sanctum</p><p class="text-sm text-stone-500 mt-2">Standard session-based authentication to secure user access.</p></div>
+                </div>
+            </div>
+            
+            <div id="db-schema" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-semibold text-slate-900">Relational Database Model</h2>
+                    <p class="mt-2 text-slate-600">This interactive application visualizes the database schema for the Repair Shop Management System. The model is normalized to reduce redundancy and ensure data integrity. Click on a table in the diagram below to explore its specific columns and constraints. <mark>N.B. These will be changed on time as needed.</mark></p>
+                </div>
+
+                <div class="border-b border-slate-200 mb-8">
+                    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                        <a href="#" id="tab-schema" class="db-tab-link active whitespace-nowrap py-4 px-1 text-base font-semibold text-slate-600 hover:text-slate-900">Schema Diagram</a>
+                        <a href="#" id="tab-analysis" class="db-tab-link whitespace-nowrap py-4 px-1 text-base font-semibold text-slate-600 hover:text-slate-900">Analysis & Relationships</a>
+                    </nav>
+                </div>
+
+                <div id="pane-schema" class="db-content-pane active">
+                    <div id="erd" class="relative min-h-[500px] mb-8 p-4">
+                        <div id="conn-cust-rep" class="connector"></div><div id="conn-user-rep" class="connector"></div><div id="conn-rep-del" class="connector"></div><div id="conn-user-del-req" class="connector"></div><div id="conn-user-del-rev" class="connector"></div><div id="conn-user-notif" class="connector"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-24 md:gap-x-16">
+                            <div class="space-y-24 flex flex-col justify-center items-center"><div id="table-customers" class="db-table bg-white p-4 rounded-lg shadow-sm w-56 text-center"><h3 class="font-bold text-lg text-slate-900">customers</h3></div><div id="table-users" class="db-table bg-white p-4 rounded-lg shadow-sm w-56 text-center"><h3 class="font-bold text-lg text-slate-900">users</h3></div></div>
+                            <div class="flex justify-center items-center"><div id="table-repair_records" class="db-table bg-white p-4 rounded-lg shadow-sm w-56 text-center"><h3 class="font-bold text-lg text-slate-900">repair_records</h3></div></div>
+                            <div class="space-y-24 flex flex-col justify-center items-center"><div id="table-deletion_requests" class="db-table bg-white p-4 rounded-lg shadow-sm w-56 text-center"><h3 class="font-bold text-lg text-slate-900">deletion_requests</h3></div><div id="table-notifications" class="db-table bg-white p-4 rounded-lg shadow-sm w-56 text-center"><h3 class="font-bold text-lg text-slate-900">notifications</h3></div></div>
+                        </div>
+                    </div>
+                    <div id="details-container" class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+                        <div id="details-placeholder" class="flex items-center justify-center text-slate-500"><p class="text-lg">Click on a table in the diagram to view its details here.</p></div>
+                        <div id="details-view" class="hidden"><h3 class="text-2xl font-bold font-mono" id="details-title"></h3><p class="mt-2 text-slate-600" id="details-description"></p><div class="mt-6 overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="border-b-2 border-slate-300"><tr><th class="py-2 px-4 text-sm font-semibold uppercase text-slate-600">Column Name</th><th class="py-2 px-4 text-sm font-semibold uppercase text-slate-600">Data Type</th><th class="py-2 px-4 text-sm font-semibold uppercase text-slate-600">Constraints & Notes</th></tr></thead><tbody id="details-body"></tbody></table></div></div>
+                    </div>
+                </div>
+
+                <div id="pane-analysis" class="db-content-pane">
+                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm"><h3 class="text-2xl font-semibold text-slate-900 mb-1">Table Complexity</h3><p class="text-slate-600 mb-6">A comparison of the number of columns in each table.</p><div class="db-chart-container"><canvas id="complexityChart"></canvas></div></div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm"><h3 class="text-2xl font-semibold text-slate-900 mb-1">Table Relationships</h3><p class="text-slate-600 mb-6">A summary of the connections between the database tables.</p><div class="space-y-4"><div class="bg-slate-50 p-4 rounded-lg"><p class="font-semibold text-slate-800 font-mono">[customers] 1 → ∞ [repair_records]</p><p class="text-sm text-slate-600">One customer can have multiple repair records.</p></div><div class="bg-slate-50 p-4 rounded-lg"><p class="font-semibold text-slate-800 font-mono">[users] 1 → ∞ [repair_records]</p><p class="text-sm text-slate-600">One user can create many repair records.</p></div><div class="bg-slate-50 p-4 rounded-lg"><p class="font-semibold text-slate-800 font-mono">[users] 1 → ∞ [deletion_requests]</p><p class="text-sm text-slate-600">One user can request or review many deletions.</p></div><div class="bg-slate-50 p-4 rounded-lg"><p class="font-semibold text-slate-800 font-mono">[repair_records] 1 → 1 [deletion_requests]</p><p class="text-sm text-slate-600">One record can have one active deletion request.</p></div><div class="bg-slate-50 p-4 rounded-lg"><p class="font-semibold text-slate-800 font-mono">[users] 1 → ∞ [notifications]</p><p class="text-sm text-slate-600">One user can receive many notifications.</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center py-6 mt-8 border-t border-stone-200">
+             <p class="text-sm text-stone-500"> <a href="https://www.github.com/callick" target="_blank"> Explore Susmit's Github</a> | Viewed on <span id="generation-date"></span></p>
+        </footer>
+
+    </div>
+
+    <script>
+        const dbData = {
+            "users": { description: "Stores login credentials and role information for both Administrators and Assistant-Admins.", columns: [ { name: 'id', type: 'BIGINT', notes: 'PRIMARY KEY, UNSIGNED, AUTO_INCREMENT' }, { name: 'name', type: 'VARCHAR(255)', notes: 'Not Nullable' }, { name: 'email', type: 'VARCHAR(255)', notes: 'UNIQUE, Not Nullable' }, { name: 'password', type: 'VARCHAR(255)', notes: 'Not Nullable (Stores hashed password)' }, { name: 'role', type: "ENUM('admin', ...)", notes: "Not Nullable, Default: 'assistant-admin'" }, { name: 'created_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP' }, { name: 'updated_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP on update' }, ] },
+            "customers": { description: "Stores unique customer information to avoid re-entering data for repeat customers.", columns: [ { name: 'id', type: 'BIGINT', notes: 'PRIMARY KEY, UNSIGNED, AUTO_INCREMENT' }, { name: 'customer_uid', type: 'VARCHAR(255)', notes: 'UNIQUE, Not Nullable. (Auto-generated)' }, { name: 'name', type: 'VARCHAR(255)', notes: 'Not Nullable' }, { name: 'contact', type: 'VARCHAR(255)', notes: 'UNIQUE, Not Nullable (Phone or Email)' }, { name: 'created_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP' }, { name: 'updated_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP on update' }, ] },
+            "repair_records": { description: "The central table for storing all information related to a repair job.", columns: [ { name: 'id', type: 'BIGINT', notes: 'PRIMARY KEY, UNSIGNED, AUTO_INCREMENT' }, { name: 'customer_id', type: 'BIGINT', notes: 'FOREIGN KEY references `customers(id)`' }, { name: 'created_by_user_id', type: 'BIGINT', notes: 'FOREIGN KEY references `users(id)`' }, { name: 'device_identification', type: 'VARCHAR(255)', notes: 'Not Nullable' }, { name: 'stated_issues', type: 'TEXT', notes: 'Not Nullable' }, { name: 'comments', type: 'TEXT', notes: 'Nullable' }, { name: 'status', type: "ENUM('in_progress', ...)", notes: 'Not Nullable, Default: `in_progress`' }, { name: 'date_of_receipt', type: 'DATE', notes: 'Not Nullable' }, { name: 'expected_delivery_date', type: 'DATE', notes: 'Nullable' }, { name: 'total_estimated_cost', type: 'DECIMAL(10, 2)', notes: 'Not Nullable, Default: `0.00`' }, { name: 'amount_paid', type: 'DECIMAL(10, 2)', notes: 'Not Nullable, Default: `0.00`' }, { name: 'amount_due', type: 'DECIMAL(10, 2)', notes: 'Not Nullable (Generated)' }, { name: 'created_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP' }, { name: 'updated_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP on update' }, ] },
+            "deletion_requests": { description: "Tracks requests from Assistant-Admins to delete a repair record, requiring Admin approval.", columns: [ { name: 'id', type: 'BIGINT', notes: 'PRIMARY KEY, UNSIGNED, AUTO_INCREMENT' }, { name: 'record_id', type: 'BIGINT', notes: 'FOREIGN KEY references `repair_records(id)`' }, { name: 'requested_by_user_id', type: 'BIGINT', notes: 'FOREIGN KEY references `users(id)`' }, { name: 'reviewed_by_user_id', type: 'BIGINT', notes: 'FOREIGN KEY references `users(id)`, Nullable' }, { name: 'status', type: "ENUM('pending', ...)", notes: "Not Nullable, Default: 'pending'" }, { name: 'created_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP' }, { name: 'updated_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP on update' }, ] },
+            "notifications": { description: "Stores system-generated notifications for users.", columns: [ { name: 'id', type: 'BIGINT', notes: 'PRIMARY KEY, UNSIGNED, AUTO_INCREMENT' }, { name: 'user_id', type: 'BIGINT', notes: 'FOREIGN KEY references `users(id)`' }, { name: 'message', type: 'TEXT', notes: 'Not Nullable' }, { name: 'is_read', type: 'BOOLEAN', notes: 'Not Nullable, Default: `false`' }, { name: 'related_url', type: 'VARCHAR(255)', notes: 'Nullable (e.g., a link to the request)' }, { name: 'created_at', type: 'TIMESTAMP', notes: 'Default: CURRENT_TIMESTAMP' }, ] }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Main Navigation Logic ---
+            const mainNavLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const contentSections = document.querySelectorAll('.content-section');
+            const initialSection = window.location.hash.substring(1) || 'overview';
+            
+            function setActiveSection(sectionId) {
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === sectionId);
+                });
+                mainNavLinks.forEach(link => {
+                    link.classList.toggle('active', link.hash === '#' + sectionId);
+                });
+                if (mobileNav.value !== sectionId) {
+                    mobileNav.value = sectionId;
+                }
+                // If the DB schema is now active, draw its connectors
+                if (sectionId === 'db-schema') {
+                    drawConnectors();
+                }
+            }
+
+            mainNavLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.hash.substring(1);
+                    window.location.hash = sectionId;
+                    setActiveSection(sectionId);
+                });
+            });
+
+            mobileNav.addEventListener('change', function() {
+                 const sectionId = this.value;
+                 window.location.hash = sectionId;
+                 setActiveSection(sectionId);
+            });
+
+            window.addEventListener('hashchange', () => {
+                const sectionId = window.location.hash.substring(1) || 'overview';
+                setActiveSection(sectionId);
+            });
+
+            setActiveSection(initialSection);
+            document.getElementById('generation-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // --- Roles Chart ---
+            const rolesCtx = document.getElementById('rolesChart');
+            if(rolesCtx) {
+                new Chart(rolesCtx, {
+                    type: 'doughnut',
+                    data: { labels: ['Administrator Permissions', 'Assistant-Admin Permissions'], datasets: [{ label: '# of Permissions', data: [9, 5], backgroundColor: [ 'rgba(79, 70, 229, 0.7)', 'rgba(245, 158, 11, 0.7)' ], borderColor: [ 'rgba(79, 70, 229, 1)', 'rgba(245, 158, 11, 1)' ], borderWidth: 1 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Inter', sans-serif" } } }, tooltip: { bodyFont: { family: "'Inter', sans-serif" }, titleFont: { family: "'Inter', sans-serif" } } } }
+                });
+            }
+
+            // --- DB Schema Logic ---
+            const dbTables = document.querySelectorAll('.db-table');
+            const connectors = document.querySelectorAll('.connector');
+            const detailsPlaceholder = document.getElementById('details-placeholder');
+            const detailsView = document.getElementById('details-view');
+            const detailsTitle = document.getElementById('details-title');
+            const detailsDescription = document.getElementById('details-description');
+            const detailsBody = document.getElementById('details-body');
+            let activeTable = null;
+
+            const dbTabLinks = { schema: document.getElementById('tab-schema'), analysis: document.getElementById('tab-analysis'), };
+            const dbPanes = { schema: document.getElementById('pane-schema'), analysis: document.getElementById('pane-analysis'), };
+
+            function switchDbTab(tab) {
+                Object.values(dbTabLinks).forEach(link => link.classList.remove('active'));
+                Object.values(dbPanes).forEach(pane => pane.classList.remove('active'));
+                dbTabLinks[tab].classList.add('active');
+                dbPanes[tab].classList.add('active');
+                if(tab === 'schema') {
+                    drawConnectors();
+                }
+            }
+
+            dbTabLinks.schema.addEventListener('click', (e) => { e.preventDefault(); switchDbTab('schema'); });
+            dbTabLinks.analysis.addEventListener('click', (e) => { e.preventDefault(); switchDbTab('analysis'); });
+            
+            function showDetails(tableId) {
+                if (activeTable === tableId) {
+                    activeTable = null;
+                    detailsPlaceholder.style.display = 'flex';
+                    detailsView.style.display = 'none';
+                    dbTables.forEach(t => t.classList.remove('active'));
+                    connectors.forEach(c => c.classList.remove('active'));
+                    return;
+                }
+                
+                activeTable = tableId;
+                const data = dbData[tableId];
+                if (!data) return;
+
+                detailsPlaceholder.style.display = 'none';
+                detailsView.style.display = 'block';
+                detailsTitle.textContent = tableId;
+                detailsDescription.textContent = data.description;
+                detailsBody.innerHTML = data.columns.map(col => `<tr class="border-b border-slate-200"><td class="p-4 font-mono text-slate-800">${col.name}</td><td class="p-4 font-mono text-sky-700">${col.type}</td><td class="p-4 text-slate-600">${col.notes}</td></tr>`).join('');
+                dbTables.forEach(t => t.classList.toggle('active', t.id === `table-${tableId}`));
+                updateConnectorStates(tableId);
+            }
+
+            function updateConnectorStates(tableId) {
+                connectors.forEach(c => c.classList.remove('active'));
+                const activeConnectors = { 'users': ['conn-user-rep', 'conn-user-del-req', 'conn-user-del-rev', 'conn-user-notif'], 'customers': ['conn-cust-rep'], 'repair_records': ['conn-cust-rep', 'conn-user-rep', 'conn-rep-del'], 'deletion_requests': ['conn-rep-del', 'conn-user-del-req', 'conn-user-del-rev'], 'notifications': ['conn-user-notif'] };
+                if(activeConnectors[tableId]){
+                    activeConnectors[tableId].forEach(id => document.getElementById(id)?.classList.add('active'));
+                }
+            }
+
+            dbTables.forEach(table => {
+                table.addEventListener('click', () => {
+                    const tableId = table.id.replace('table-', '');
+                    showDetails(tableId);
+                });
+            });
+
+            function drawConnectors() {
+                if(window.innerWidth < 768) return;
+                const erd = document.getElementById('erd');
+                if (!erd) return;
+                const erdRect = erd.getBoundingClientRect();
+                const tableRects = {
+                    customers: document.getElementById('table-customers').getBoundingClientRect(), users: document.getElementById('table-users').getBoundingClientRect(), repair_records: document.getElementById('table-repair_records').getBoundingClientRect(), deletion_requests: document.getElementById('table-deletion_requests').getBoundingClientRect(), notifications: document.getElementById('table-notifications').getBoundingClientRect(),
+                };
+                
+                const drawLine = (connId, r1, r2, side1 = 'right', side2 = 'left') => {
+                    const conn = document.getElementById(connId);
+                    if(!conn) return;
+                    const x1 = r1[side1] - erdRect.left + window.scrollX; const y1 = r1.top + r1.height / 2 - erdRect.top + window.scrollY;
+                    const x2 = r2[side2] - erdRect.left + window.scrollX; const y2 = r2.top + r2.height / 2 - erdRect.top + window.scrollY;
+                    conn.style.left = `${Math.min(x1, x2)}px`; conn.style.top = `${y1}px`; conn.style.width = `${Math.abs(x1 - x2)}px`; conn.style.height = `2px`;
+                    if (Math.abs(y1-y2) > 2) { conn.style.height = `${Math.abs(y1-y2)}px`; conn.style.width = '2px'; conn.style.left = `${x1}px`; conn.style.top = `${Math.min(y1,y2)}px`; }
+                };
+                drawLine('conn-cust-rep', tableRects.customers, tableRects.repair_records); drawLine('conn-user-rep', tableRects.users, tableRects.repair_records);
+                drawLine('conn-rep-del', tableRects.repair_records, tableRects.deletion_requests); drawLine('conn-user-del-req', tableRects.users, tableRects.deletion_requests, 'right', 'top');
+                drawLine('conn-user-notif', tableRects.users, tableRects.notifications);
+            }
+
+            const complexityCtx = document.getElementById('complexityChart');
+            if (complexityCtx) {
+                new Chart(complexityCtx, {
+                    type: 'bar',
+                    data: { labels: Object.keys(dbData), datasets: [{ label: 'Number of Columns', data: Object.values(dbData).map(t => t.columns.length), backgroundColor: 'rgba(14, 165, 233, 0.6)', borderColor: 'rgba(14, 165, 233, 1)', borderWidth: 1 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' } }, y: { grid: { display: false } } } }
+                });
+            }
+            window.addEventListener('resize', drawConnectors);
+        });
+    </script>
+
+</body>
+</html>
