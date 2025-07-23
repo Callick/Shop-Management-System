@@ -1,6 +1,6 @@
 # Shop-Management-System
 🛠 Overview 
-[Click here for an overview](https://rawcdn.githack.com/Callick/Shop-Management-System/8768d91cad8d1ad9e49a91e09842e6d6d77ca048/Run_me_for_project_overview.html)
+[Click here for an overview](https://rawcdn.githack.com/Callick/Shop-Management-System/a1a2b13d5a1b017fee96e01202545f44eb9a511f/Run_me_for_project_overview.html)
 <br>The Shop Management System is a web-based application designed to replace traditional paper-based repair tracking in service shops. It provides a secure, role-based interface for managing customer repair records, handling deletion workflows, and delivering notifications. Built on the Laravel framework with MySQL/PostgreSQL backend, the system ensures data integrity, operational efficiency, and an intuitive user experience.</br>
 ## ✅ Key Features
 **Role-Based Access Control (RBAC)**<BR>
