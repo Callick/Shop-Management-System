@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Repair Management System</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Section with Vanta.js Background -->
+    <div id="vanta-bg" class="relative h-screen w-full">
+        <div class="absolute inset-0 bg-black bg-opacity-70 z-10"></div>
+        <div class="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-pulse-slow" data-aos="fade-down">
+                Mobile Repair Management System
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl" data-aos="fade-up" data-aos-delay="200">
+                Streamline your repair shop operations with our comprehensive customer management solution
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4" data-aos="fade-up" data-aos-delay="400">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                    Get Started
+                </button>
+                <button class="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white font-bold py-3 px-8 rounded-full transition duration-300">
+                    View Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-20 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4" data-aos="fade-up">
+                Why Choose Our System?
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Designed specifically for mobile repair shops to simplify customer management and streamline operations
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="smartphone" class="text-blue-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Device Tracking</h3>
+                <p class="text-gray-600">
+                    Keep track of all devices in your shop with detailed information including model, issue, and repair status.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="user" class="text-green-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Customer Management</h3>
+                <p class="text-gray-600">
+                    Store and manage customer details including contact information, repair history, and preferences.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="file-text" class="text-purple-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Receipt Generation</h3>
+                <p class="text-gray-600">
+                    Automatically generate professional receipts with all repair details and payment information.
+                </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up" data-aos-delay="300">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="calendar" class="text-yellow-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Delivery Tracking</h3>
+                <p class="text-gray-600">
+                    Set and track expected delivery dates to keep customers informed about their repair progress.
+                </p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up" data-aos-delay="400">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="dollar-sign" class="text-red-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Payment Management</h3>
+                <p class="text-gray-600">
+                    Track payments, calculate due amounts, and maintain financial records for all repairs.
+                </p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="feature-card bg-white rounded-xl p-8 shadow-lg" data-aos="fade-up" data-aos-delay="500">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-feather="bar-chart-2" class="text-indigo-600 w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Analytics Dashboard</h3>
+                <p class="text-gray-600">
+                    Gain insights into your business performance with detailed reports and analytics.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4" data-aos="fade-up">
+                    How It Works
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    Simple steps to manage your mobile repair business efficiently
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+                <div class="md:w-1/2" data-aos="fade-right">
+                    <div class="relative">
+                        <div class="absolute -top-6 -left-6 w-full h-full bg-blue-200 rounded-2xl"></div>
+                        <img src="http://static.photos/technology/640x360/123" alt="Mobile Repair System" class="relative rounded-2xl shadow-xl w-full">
+                    </div>
+                </div>
+                <div class="md:w-1/2 space-y-8" data-aos="fade-left">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-xl">
+                                1
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Customer Registration</h3>
+                            <p class="mt-2 text-gray-600">
+                                Add new customers to the system with their personal details and contact information.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-xl">
+                                2
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Device Entry</h3>
+                            <p class="mt-2 text-gray-600">
+                                Enter device details including model, issue description, and repair requirements.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-xl">
+                                3
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Receipt Generation</h3>
+                            <p class="mt-2 text-gray-600">
+                                Generate professional receipts with all repair details and payment information.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-xl">
+                                4
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Track & Deliver</h3>
+                            <p class="mt-2 text-gray-600">
+                                Track repair progress and notify customers when their device is ready for pickup.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div data-aos="fade-up">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">1000+</div>
+                    <div class="text-lg">Devices Repaired</div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">500+</div>
+                    <div class="text-lg">Happy Customers</div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">98%</div>
+                    <div class="text-lg">Customer Satisfaction</div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">24/7</div>
+                    <div class="text-lg">System Availability</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="py-20">
+        <div class="max-w-4xl mx-auto text-center px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6" data-aos="fade-up">
+                Ready to Transform Your Repair Business?
+            </h2>
+            <p class="text-lg text-gray-600 mb-10 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Join hundreds of repair shops already using our system to streamline their operations and delight customers.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="400">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-full transition duration-300 transform hover:scale-105">
+                    Start Free Trial
+                </button>
+                <button class="bg-gray-800 hover:bg-black text-white font-bold py-4 px-10 rounded-full transition duration-300">
+                    Schedule Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold">Mobile Repair System</h3>
+                    <p class="mt-2 text-gray-400">Simplifying mobile repair management</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i data-feather="facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i data-feather="twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i data-feather="instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i data-feather="linkedin"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+                <p>&copy; 2023 Mobile Repair Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Vanta.js background
+        VANTA.GLOBE({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x3498db,
+            color2: 0x9b59b6,
+            backgroundColor: 0x000000
+        });
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Initialize Feather Icons
+        feather.replace();
+    </script>
+</body>
+</html>
