@@ -44,7 +44,6 @@ class CustomShop extends Controller
                 ->withInput();
         }
         // when multiple operations in various tables are needed
-        // use transaction
         DB::beginTransaction();
         try
             {
@@ -58,16 +57,13 @@ class CustomShop extends Controller
                     'shop_address' => $request->input('shop_address')
                 ]);
                 
-                // after creating shop, take the shop_id
-                //$shopID = $shop->shop_id;
                 
-                // find the user,  assign the shop_id to the user
+                // find the exact user
                 $user = User::find($userID);
                 $shopID = $shop->id;
                 if($user)
                     {
-                        //$affectedRows = DB::table('users')->where('id', $userID)->update(['shop_id' => $shop->shop_id]);
-                        // assign shop_id to user
+                        // assign the shop_id to the user table under shop_id column
                         $user->shop_id = $shopID;
                         $user->save();
                     }
@@ -78,7 +74,7 @@ class CustomShop extends Controller
                     }
                 // if everything is fine, commit the transaction
                 DB::commit();
-                return redirect()->back()->with('success', 'Shop created successfully under shop id-' .$shopID .$userID);
+                return redirect()->back()->with('success', 'Shop created successfully under user-ID: '.$userID);
 
             }
         catch(\Exception $e)
