@@ -244,26 +244,32 @@
                             </div>
                             
                             <!-- Add Shop Form -->
-                            <div id="shops-form" class="form-section">
-                                <form class="space-y-6">
+                            <div id="shops-form" class="form-section" >
+                                <form class="space-y-6" method="POST" action="{{ route('add.shop') }}">
+                                @csrf
                                     <div>
                                         <label for="shop-name" class="block text-sm font-medium text-gray-700">Shop Name <span class="text-red-500">*</span></label>
-                                        <input type="text" id="shop-name" name="shop-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="text" id="shop-name" name="shop_name" value="{{old('shop_name')}}" required  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
                                     
                                     <div>
                                         <label for="proprietor-name" class="block text-sm font-medium text-gray-700">Shop Proprietor Name <span class="text-red-500">*</span></label>
-                                        <input type="text" id="proprietor-name" name="proprietor-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="text" id="proprietor-name" name="proprietor_name" value="{{old('proprietor_name')}}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
                                     
                                     <div>
                                         <label for="shop-email" class="block text-sm font-medium text-gray-700">Shop Email <span class="text-red-500">*</span></label>
-                                        <input type="email" id="shop-email" name="shop-email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="email" id="shop-email" name="shop_email" value="{{old('shop_email')}}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <label for="shop-email" class="block text-sm font-medium text-gray-700">Shop Phone <span class="text-red-500">*</span></label>
+                                        <input type="number" id="shop-email" name="shop_phone" value="{{old('shop_phone')}}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
                                     
                                     <div>
                                         <label for="shop-address" class="block text-sm font-medium text-gray-700">Shop Address <span class="text-red-500">*</span></label>
-                                        <textarea id="shop-address" name="shop-address" required rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                        <textarea id="shop-address" name="shop_address" value="{{old('shop_address')}}" required rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                                     </div>
                                     
                                     <div>

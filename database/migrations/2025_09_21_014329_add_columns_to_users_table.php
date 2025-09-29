@@ -15,7 +15,7 @@ return new class extends Migration
             //
             $table->string('phone')->after('email');
             $table->enum('user_role', ['admin', 'assistant'])->default('admin')->after('phone');
-            $table->foreignId('shop_id')->after('user_role')->nullable()->constrained('shops', 'shop_id');
+            $table->foreignId('shop_id')->after('user_role')->nullable()->constrained('shops', 'id');
         });
     }
 

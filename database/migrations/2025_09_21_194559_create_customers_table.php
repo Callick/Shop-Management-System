@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customers', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('customer_name');
             $table->string('customer_id')->unique();
             $table->string('customer_phone');
             $table->string('product_name');
             $table->text('product_issue');
-            $table->foreignId('shop_id')->constrained('shops', 'shop_id');
+            $table->foreignId('shop_id')->constrained('shops', 'id');
             $table->timestamps();
         });
     }

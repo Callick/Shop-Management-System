@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shops', function (Blueprint $table) {
-            $table->bigIncrements('shop_id');
-            $table->foreignId('id')->nullable()->constrained('users');
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users', 'id');
             $table->string('shop_name');
             $table->string('shop_proprietor_name');
             $table->string('shop_email')->unique();

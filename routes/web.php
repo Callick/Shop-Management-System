@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomShop;
 use App\Http\Controllers\CustomUsers;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -16,4 +18,5 @@ Route::middleware([
     })->name('dashboard');
 
     Route::post('/add-user', [CustomUsers::class, 'store'])->name('add.user');
+    Route::post('/add-shop', [CustomShop::class, 'store'])->name('add.shop');
 });
