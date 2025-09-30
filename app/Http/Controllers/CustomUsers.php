@@ -25,8 +25,6 @@ class CustomUsers extends Controller
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
-            // with json response
-            // return response()->json(['errors' => $validator->errors()], 422);
         }
 
         try{
@@ -43,8 +41,6 @@ class CustomUsers extends Controller
         catch(\Exception $e){
 
                 return redirect()->back()->with('error', 'An error occurred while creating the user: ' . $e->getMessage());
-                // with json response
-                // return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
 
             }
     }
