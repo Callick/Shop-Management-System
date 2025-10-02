@@ -36,11 +36,11 @@ class CustomUsers extends Controller
                     'password' => bcrypt($request->user_password),
                 ]);
 
-                return redirect()->back()->with('success', 'User created successfully');
+                return redirect()->back()->with('activeTab', $request->active_tab)->with('success', 'User created successfully');
             }
         catch(\Exception $e){
 
-                return redirect()->back()->with('error', 'An error occurred while creating the user: ' . $e->getMessage());
+                return redirect()->back()->with('activeTab', $request->active_tab)->with('error', 'An error occurred while creating the user: ' . $e->getMessage());
 
             }
     }
