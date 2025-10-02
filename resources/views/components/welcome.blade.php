@@ -176,13 +176,13 @@
                         <!-- Tab Navigation -->
                         <div class="border-b border-gray-200 mb-6">
                             <nav class="flex space-x-8">
-                                <button id="users-tab" class="tab-button active py-4 px-1 text-sm font-medium text-indigo-600">
+                                <button id="users-tab" class="tab-button @if(session('userTab')) {{session('userTab')}} @endif py-4 px-1 text-sm font-medium text-indigo-600">
                                     Add Users
                                 </button>
-                                <button id="shops-tab" class="tab-button py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                                <button id="shops-tab" class="tab-button @if(session('shopTab')) {{session('shopTab')}} @endif py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
                                     Add Shops
                                 </button>
-                                <button id="customers-tab" class="tab-button py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                                <button id="customers-tab" class="tab-button @if(session('customerTab')) {{session('customerTab')}} @endif py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
                                     Add Customers
                                 </button>
                             </nav>
@@ -193,7 +193,8 @@
                             <!-- Add User Form -->
                             <div id="users-form" class="form-section active">
                                 <form class="space-y-6" method="POST" action="{{ route('add.user') }}">
-                                    @csrf
+                                @csrf
+                                <input type="hidden" name="active_tab" value="users-form">
                                     <div>
                                         <label for="user-name" class="block text-sm font-medium text-gray-700">User Name <span class="text-red-500">*</span></label>
                                         <input type="text" id="user-name" name="user_name" value="{{old('user-name')}}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -247,6 +248,7 @@
                             <div id="shops-form" class="form-section" >
                                 <form class="space-y-6" method="POST" action="{{ route('add.shop') }}">
                                 @csrf
+                                <input type="hidden" name="active_tab" value="shops-form">
                                     <div>
                                         <label for="shop-name" class="block text-sm font-medium text-gray-700">Shop Name <span class="text-red-500">*</span></label>
                                         <input type="text" id="shop-name" name="shop_name" value="{{old('shop_name')}}" required  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -284,6 +286,7 @@
                             <div id="customers-form" class="form-section">
                                 <form class="space-y-6" method="POST" action="{{ route('add.customer') }}">
                                 @csrf
+                                <input type="hidden" name="active_tab" value="customers-form">
                                     <div>
                                         <label for="customer-name" class="block text-sm font-medium text-gray-700">Customer Name <span class="text-red-500">*</span></label>
                                         <input type="text" id="customer-name" name="customer_name" value="{{ old('customer_name') }}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -318,7 +321,7 @@
         </main>
     </div>
 
-    <script>
+    <!--<script>
         const togglePassword = document.querySelector('#togglePassword');
         const passwordInput = document.querySelector('#user-password');
 
@@ -370,4 +373,57 @@
                 });
             }
         });
-    </script>
+    </script>-->
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to switch tabs
+    function switchTab(tabName) {
+        // Hide all form sections
+        document.querySelectorAll('.form-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Remove active styles from all tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('text-indigo-600', 'border-b-2', 'border-indigo-600');
+            button.classList.add('text-gray-500', 'hover:text-gray-700');
+        });
+        
+        // Show the selected form section
+        const activeSection = document.getElementById(tabName + '-form');
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
+        
+        // Add active styles to the clicked tab
+        const activeTab = document.getElementById(tabName + '-tab');
+        if (activeTab) {
+            activeTab.classList.remove('text-gray-500', 'hover:text-gray-700');
+            activeTab.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600');
+        }
+        
+        // Update hidden inputs in all forms
+        document.querySelectorAll('input[name="active_tab"]').forEach(input => {
+            input.value = tabName + '-form';
+        });
+    }
+    
+    // Set initial active tab from session
+    const activeTabFromSession = "{{ session('activeTab') }}";
+    if (activeTabFromSession) {
+        // Extract tab name from session value (e.g., 'users-form' -> 'users')
+        const tabName = activeTabFromSession.replace('-form', '');
+        switchTab(tabName);
+    }
+    
+    // Add click events to tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.id; // e.g., 'users-tab'
+            const tabName = tabId.replace('-tab', ''); // e.g., 'users'
+            switchTab(tabName);
+        });
+    });
+});
+</script>
