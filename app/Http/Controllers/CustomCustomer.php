@@ -62,12 +62,12 @@ class CustomCustomer extends Controller
                 ]);
 
                 DB::commit();
-                return redirect()->back()->with('success', 'Customer added successfully.');
+                return redirect()->back()->with('activeTab', $request->input('active_tab'))->with('success', 'Customer added successfully.');
             }
         catch (\Exception $e)
             {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'An error occurred while adding the customer. Please try again.');
+                return redirect()->back()->with('activeTab', $request->input('active_tab'))->with('error', 'An error occurred while adding the customer. Please try again.');
             }
     }
 }
