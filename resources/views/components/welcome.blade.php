@@ -282,25 +282,26 @@
                             
                             <!-- Add Customer Form -->
                             <div id="customers-form" class="form-section">
-                                <form class="space-y-6">
+                                <form class="space-y-6" method="POST" action="{{ route('add.customer') }}">
+                                @csrf
                                     <div>
                                         <label for="customer-name" class="block text-sm font-medium text-gray-700">Customer Name <span class="text-red-500">*</span></label>
-                                        <input type="text" id="customer-name" name="customer-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="text" id="customer-name" name="customer_name" value="{{ old('customer_name') }}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
 
                                     <div>
                                         <label for="customer-phone" class="block text-sm font-medium text-gray-700">Customer Phone <span class="text-red-500">*</span></label>
-                                        <input type="number" id="customer-phone" name="customer-phone" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="number" id="customer-phone" name="customer_phone" value="{{ old('customer_phone') }}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
                                     
                                     <div>
                                         <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name <span class="text-red-500">*</span></label>
-                                        <input type="text" id="product-name" name="product-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="text" id="product-name" name="product_name" value="{{ old('product_name') }}" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     </div>
                                     
                                     <div>
                                         <label for="product-issue" class="block text-sm font-medium text-gray-700">Product Issue <span class="text-red-500">*</span></label>
-                                        <textarea id="product-issue" name="product-issue" required rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                        <textarea id="product-issue" name="product_issue" value="{{ old('product_issue') }}" required rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                                     </div>
                                     
                                     <div>
