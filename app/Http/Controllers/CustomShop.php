@@ -74,14 +74,14 @@ class CustomShop extends Controller
                     }
                 // if everything is fine, commit the transaction
                 DB::commit();
-                return redirect()->back()->with('success', 'Shop created successfully under user-ID: '.$userID);
+                return redirect()->back()->with('activeTab', $request->active_tab)->with('success', 'Shop created successfully');
 
             }
         catch(\Exception $e)
             {
                 // if any error occurs, rollback the transaction
                 DB::rollBack();
-                return back()->with('error', 'Failed to create shop. Please try again.')->withInput()->with('activeTab', 'shops-form');
+                return back()->with('activeTab', $request->active_tab)->with('error', 'Failed to create shop. Please try again.')->withInput();
             }
     }
 }
